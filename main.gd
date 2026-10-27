@@ -3,6 +3,13 @@ extends Node
 @export var mob_scene: PackedScene
 var score
 
+func _ready():
+	# Valores vindos de config.gd (altere lá, não aqui).
+	$ColorRect.color = Config.BACKGROUND_COLOR
+	$StartTimer.wait_time = Config.START_DELAY
+	$MobTimer.wait_time = Config.MOB_SPAWN_INTERVAL
+
+
 func game_over():
 	$ScoreTimer.stop()
 	$MobTimer.stop()
@@ -17,7 +24,7 @@ func new_game():
 	$Player.start($StartPosition.position)
 	$StartTimer.start()
 	$HUD.update_score(score)
-	$HUD.show_message("Get Ready")
+	$HUD.show_message(Config.MSG_READY)
 	$Music.play()
 
 
@@ -40,7 +47,7 @@ func _on_MobTimer_timeout():
 	mob.rotation = direction
 
 	# Choose the velocity for the mob.
-	var velocity = Vector2(randf_range(150.0, 250.0), 0.0)
+	var velocity = Vector2(randf_range(Config.MOB_MIN_SPEED, Config.MOB_MAX_SPEED), 0.0)
 	mob.linear_velocity = velocity.rotated(direction)
 
 	# Spawn the mob by adding it to the Main scene.
@@ -48,7 +55,7 @@ func _on_MobTimer_timeout():
 
 
 func _on_ScoreTimer_timeout():
-	score += 1
+	score += Config.SCORE_PER_SECOND
 	$HUD.update_score(score)
 
 

@@ -1,2 +1,18 @@
+# Cache e arquivos gerados pela Godot
+.godot/
 .import
 logs/
+
+# Exportações
+build/
+*.apk
+*.aab
+*.exe
+*.pck
+*.zip
+
+# Editores e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

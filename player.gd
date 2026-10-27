@@ -2,7 +2,7 @@ extends Area2D
 
 signal hit
 
-@export var speed = 400 # How fast the player will move (pixels/sec).
+var speed = Config.PLAYER_SPEED # Velocidade do jogador (pixels/s), definida em config.gd.
 var screen_size # Size of the game window.
 
 func _ready():
