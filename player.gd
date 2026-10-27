@@ -40,6 +40,23 @@ func _process(delta):
 		rotation = PI if velocity.y > 0 else 0
 
 
+# Troca a arte do jogador pelo personagem "index" de Config.CHARACTERS
+# (a arte que ficou na cena player.tscn é a do jogo base e é substituída aqui).
+func set_character(index):
+	var art = Config.ART_DIR + Config.CHARACTERS[index]["art"]
+	var frames = SpriteFrames.new()
+	frames.remove_animation(&"default")
+	# "right": andando de lado (8 quadros). "up": de costas, andando para cima (2 quadros).
+	for animation in [[&"right", "_andar_", 8], [&"up", "_subir_", 2]]:
+		frames.add_animation(animation[0])
+		frames.set_animation_speed(animation[0], Config.PLAYER_ANIMATION_SPEED)
+		for i in animation[2]:
+			frames.add_frame(animation[0], load("%s%s%d.png" % [art, animation[1], i]))
+	$AnimatedSprite2D.sprite_frames = frames
+	$AnimatedSprite2D.animation = &"right"
+	$Trail.texture = frames.get_frame_texture(&"right", 0) # o rastro é uma cópia apagada do personagem
+
+
 func start(pos):
 	position = pos
 	rotation = 0

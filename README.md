@@ -109,5 +109,15 @@ AGENTS.md            regras para a IA (CLAUDE.md aponta para ele)
 - **Arte:** "Abstract Platformer", de [Kenney](https://www.kenney.nl/assets/abstract-platformer), CC0 1.0.
 - **Música:** "House In a Forest Loop", © 2012 [HorrorPen](https://opengameart.org/users/horrorpen), [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/). Atribuição obrigatória em qualquer jogo publicado com ela. Fonte: https://opengameart.org/content/loop-house-in-a-forest
 - **Fonte:** Xolonium, © 2011-2016 Severin Meyer, SIL Open Font License 1.1 (`fonts/LICENSE.txt`).
+
+### Tema B-R-O Bró (`art/teresina/`, spec 001)
+
+Os arquivos de `art/teresina/` foram gerados por `scripts/preparar_arte.gd` (arte) e `scripts/gerar_baiao.py` (música);
+o topo de cada script explica como refazer.
+
+- **Personagens** (`vendedor_*`, `estudante_*`, `teresinense_*`): "Toon Characters", de [Kenney](https://kenney.nl/assets/toon-characters), CC0 1.0. Poses *walk* e *climb* de Male person, Female person e Male adventurer, reduzidas para 144 x 192.
+- **Brasa e mormaço** (`brasa_*`, `mormaco_*`): "Particle Pack", de [Kenney](https://kenney.nl/assets/particle-pack), CC0 1.0. `fire_01`/`fire_02` e `smoke_04`/`smoke_07`, recortados e coloridos.
+- **Sol** (`sol_*`): "Shiny Sun", de SalemF, [OpenGameArt](https://opengameart.org/content/shiny-sun), CC0 1.0, sobre o brilho `star_08`/`star_09` do "Particle Pack" (Kenney, CC0 1.0), colorido.
+- **Música** (`baiao_do_bro_bro.wav`): baião original composto e sintetizado por código para este projeto, CC0 1.0.
 - **Livro de referência do minicurso:** Clinton Keith, *Agile Game Development: Build, Play, Repeat*, 2ª edição, Addison-Wesley, 2020.
 - **Nomes dos artefatos do SDD** (constituição, spec, plano, tarefas): inspirados no [GitHub Spec Kit](https://github.com/github/spec-kit), uma ferramenta de código aberto mais completa para o mesmo fluxo.

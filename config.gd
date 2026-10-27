@@ -5,25 +5,40 @@ extends Node
 ## Regra do projeto: números e textos que definem a "cara" do jogo ficam AQUI,
 ## nunca espalhados pelos outros scripts. Acesso nos scripts: Config.PLAYER_SPEED.
 ##
-## Dica: os textos padrão não usam acentos porque a fonte do demo (Xolonium)
-## pode não ter todos os glifos. Se usar acento e a letra sair errada, troque a fonte.
+## Dica: a fonte do jogo (Xolonium) tem os acentos do português (á, ã, ç, é, í, ó, ú...).
+## Se usar um símbolo diferente e ele sair errado, troque a fonte.
 
 # --- Textos (aparecem na tela) ---
-const TITLE := "Fuja dos\nBichos"      # \n = quebra de linha
-const MSG_READY := "Preparar"
-const MSG_GAME_OVER := "Acabou!"
+const TITLE := "Fuja do\nB-R-O Bró"   # \n = quebra de linha
+const MSG_READY := "Segura\no calor!"
+const MSG_GAME_OVER := "Torrou!"
 const BUTTON_START := "Jogar"
+const BUTTON_PREVIOUS := "<"          # botões de trocar de personagem
+const BUTTON_NEXT := ">"
 
 # --- Visual ---
-const BACKGROUND_COLOR := Color(0.22, 0.37, 0.38)   # vermelho, verde, azul de 0 a 1
+const BACKGROUND_COLOR := Color(0.6, 0.3, 0.15)   # terra quente; vermelho, verde, azul de 0 a 1
+const ART_DIR := "res://art/teresina/"            # pasta da arte do tema (veja scripts/preparar_arte.gd)
+const MUSIC := "res://art/teresina/baiao_do_bro_bro.wav"
 
 # --- Jogador ---
 const PLAYER_SPEED := 400.0           # pixels por segundo
+const PLAYER_ANIMATION_SPEED := 12.0  # quadros por segundo ao andar
+# Personagens da tela inicial: nome mostrado e prefixo dos arquivos em ART_DIR
+# (<arte>_andar_0..7.png de lado e <arte>_subir_0..1.png de costas). O primeiro já vem escolhido.
+const CHARACTERS := [
+	{"name": "Vendedor de cajuína", "art": "vendedor"},
+	{"name": "Estudante", "art": "estudante"},
+	{"name": "Teresinense", "art": "teresinense"},
+]
 
 # --- Inimigos ---
 const MOB_MIN_SPEED := 150.0          # pixels por segundo
 const MOB_MAX_SPEED := 250.0          # precisa ser maior ou igual ao mínimo
 const MOB_SPAWN_INTERVAL := 0.5       # segundos entre um inimigo e o próximo
+const MOB_ANIMATION_SPEED := 4.0      # quadros por segundo
+# Tipos de inimigo, sorteados a cada nascimento. Cada um tem <tipo>_1.png e <tipo>_2.png em ART_DIR.
+const MOB_TYPES := ["sol", "brasa", "mormaco"]
 
 # --- Ritmo e pontuação ---
 const START_DELAY := 2.0              # segundos entre "Preparar" e o início da partida

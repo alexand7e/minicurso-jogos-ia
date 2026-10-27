@@ -8,6 +8,10 @@ func _ready():
 	$ColorRect.color = Config.BACKGROUND_COLOR
 	$StartTimer.wait_time = Config.START_DELAY
 	$MobTimer.wait_time = Config.MOB_SPAWN_INTERVAL
+	$Music.stream = load(Config.MUSIC)
+	# A faixa WAV não vem com repetição ligada: recomeça quando acaba.
+	# (No fim de jogo, $Music.stop() não dispara "finished", então ela não volta sozinha.)
+	$Music.finished.connect($Music.play)
 
 
 func game_over():
@@ -21,6 +25,7 @@ func game_over():
 func new_game():
 	get_tree().call_group(&"mobs", &"queue_free")
 	score = 0
+	$Player.set_character($HUD.character_index)
 	$Player.start($StartPosition.position)
 	$StartTimer.start()
 	$HUD.update_score(score)
