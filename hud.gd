@@ -10,6 +10,10 @@ func _ready():
 	$StartButton.text = Config.BUTTON_START
 	_build_character_picker()
 	_show_character()
+	# Contorno escuro: deixa o texto legível sobre o cenário que anda (spec 002).
+	for label in [$ScoreLabel, $MessageLabel, $CharacterPicker/CharacterLabel]:
+		label.add_theme_constant_override(&"outline_size", 12)
+		label.add_theme_color_override(&"font_outline_color", Color(0.15, 0.08, 0.05))
 
 
 func show_message(text):

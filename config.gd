@@ -43,3 +43,13 @@ const MOB_TYPES := ["sol", "brasa", "mormaco"]
 # --- Ritmo e pontuação ---
 const START_DELAY := 2.0              # segundos entre "Preparar" e o início da partida
 const SCORE_PER_SECOND := 1           # pontos ganhos a cada segundo vivo
+
+# --- Fases (o chão anda e o cenário muda; veja scenery.gd) ---
+const SCROLL_SPEED := 120.0           # pixels por segundo que o chão desce durante a partida
+# Em ordem. "name": aparece na tela quando a fase começa (\n = quebra de linha).
+# "scenery": trecho de cenário montado em scenery.gd. "min_score": pontos para a fase começar.
+# "mob_spawn_interval": segundos entre um inimigo e o próximo nesta fase.
+const PHASES := [
+	{"name": "Fase 1\nRaul Lopes", "scenery": "raul_lopes", "min_score": 0, "mob_spawn_interval": MOB_SPAWN_INTERVAL},
+	{"name": "Fase 2\nUFPI", "scenery": "ufpi", "min_score": 20, "mob_spawn_interval": 0.4},
+]

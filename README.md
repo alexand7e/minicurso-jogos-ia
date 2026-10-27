@@ -85,6 +85,7 @@ main.gd / .tscn      regras da partida
 player.gd / .tscn    jogador
 mob.gd / .tscn       inimigo
 hud.gd / .tscn       interface
+scenery.gd           chão das fases (Raul Lopes e UFPI), montado por código
 art/ fonts/          arte, música e fonte do demo
 tests/run_tests.gd   testes de aceitação (um grupo por CA-xx)
 scripts/check.sh     importa e roda os testes sem janela
@@ -119,5 +120,9 @@ o topo de cada script explica como refazer.
 - **Brasa e mormaço** (`brasa_*`, `mormaco_*`): "Particle Pack", de [Kenney](https://kenney.nl/assets/particle-pack), CC0 1.0. `fire_01`/`fire_02` e `smoke_04`/`smoke_07`, recortados e coloridos.
 - **Sol** (`sol_*`): "Shiny Sun", de SalemF, [OpenGameArt](https://opengameart.org/content/shiny-sun), CC0 1.0, sobre o brilho `star_08`/`star_09` do "Particle Pack" (Kenney, CC0 1.0), colorido.
 - **Música** (`baiao_do_bro_bro.wav`): baião original composto e sintetizado por código para este projeto, CC0 1.0.
+- **Cenário das fases** (`cenario/`, spec 002), copiado sem mudança:
+  - `asfalto`, `grama`, `arvore_grande`, `arvore_pequena`, `carro_1`, `carro_2`: "Racing Pack", de [Kenney](https://kenney.nl/assets/racing-pack), CC0 1.0.
+  - `agua`, `areia`, `carnauba`, `aguape`: "Pirate Pack", de [Kenney](https://kenney.nl/assets/pirate-pack), CC0 1.0.
+  - A Ponte Estaiada, o portal e os prédios da UFPI e as placas são desenhados por código em `scenery.gd` (formas simples e a fonte Xolonium).
 - **Livro de referência do minicurso:** Clinton Keith, *Agile Game Development: Build, Play, Repeat*, 2ª edição, Addison-Wesley, 2020.
 - **Nomes dos artefatos do SDD** (constituição, spec, plano, tarefas): inspirados no [GitHub Spec Kit](https://github.com/github/spec-kit), uma ferramenta de código aberto mais completa para o mesmo fluxo.

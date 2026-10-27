@@ -3,7 +3,7 @@ extends SceneTree
 ##
 ## Cada grupo de verificações corresponde a um critério de aceitação (CA-xx)
 ## escrito em specs/NNN-*/spec.md (CA-01 a CA-04 na spec 000, CA-05 a CA-09 na
-## spec 001). Ao criar uma spec nova, adicione
+## spec 001, CA-15 a CA-18 na spec 002). Ao criar uma spec nova, adicione
 ## aqui uma função _test_... para cada critério novo.
 ##
 ## Como rodar: scripts/check.sh (veja o README para o comando completo).
@@ -29,6 +29,10 @@ func _run_all() -> void:
 	await _test_ca07_personagem_na_partida()
 	await _test_ca08_escolha_mantida()
 	await _test_ca09_tela_inicial_do_tema()
+	await _test_ca15_comeca_na_raul_lopes()
+	await _test_ca16_chao_anda()
+	await _test_ca17_fase_2_ufpi()
+	await _test_ca18_volta_a_fase_1()
 	print("")
 	if failures == 0:
 		print("OK: %d verificacoes passaram." % checks)
@@ -72,6 +76,42 @@ func _disable_player_collision(main: Node) -> void:
 # Começa a partida como quem joga: apertando o botão Jogar.
 func _press_start(main: Node) -> void:
 	main.get_node("HUD/StartButton").pressed.emit()
+
+
+# Verdadeiro se a lista não está vazia e todos os trechos de cenário são do tipo "kind".
+func _only(kinds: Array, kind: String) -> bool:
+	return not kinds.is_empty() and kinds.all(func(k): return k == kind)
+
+
+# Verdadeiro se os trechos do cenário cobrem a tela de cima a baixo, sem buraco entre eles.
+func _covers_screen(scenery: Node) -> bool:
+	var tops := []
+	for segment in scenery.segments:
+		tops.append(segment.position.y)
+	tops.sort()
+	if tops.is_empty() or tops[0] > 0.0:
+		return false
+	for i in range(1, tops.size()):
+		if tops[i] > tops[i - 1] + scenery.SEGMENT_HEIGHT + 0.5:
+			return false
+	return tops[-1] + scenery.SEGMENT_HEIGHT >= scenery.get_viewport_rect().size.y
+
+
+# Rola o cenário "distance" pixels em passos pequenos, como acontece quadro a quadro.
+func _scroll_in_steps(scenery: Node, distance: float) -> bool:
+	var always_covered := true
+	var step := 8.0
+	for i in int(distance / step):
+		scenery.scroll(step)
+		if not _covers_screen(scenery):
+			always_covered = false
+	return always_covered
+
+
+# Leva a partida para a fase 2 dando o ponto que falta.
+func _reach_phase_2(main: Node) -> void:
+	main.score = cfg.PHASES[1]["min_score"] - cfg.SCORE_PER_SECOND
+	main._on_ScoreTimer_timeout()
 
 
 # Caminho do primeiro quadro de uma animação do jogador.
@@ -253,4 +293,74 @@ func _test_ca09_tela_inicial_do_tema() -> void:
 			names_ok = false
 	_expect(names_ok, "ha tres personagens, todos com nome")
 	_expect(hud.get_node("CharacterPicker").visible, "o seletor de personagem aparece")
+	await _cleanup(main)
+
+
+func _test_ca15_comeca_na_raul_lopes() -> void:
+	print("CA-15: a partida comeca na fase 1, na Raul Lopes")
+	var main = _new_main()
+	await process_frame
+	main.new_game()
+	_disable_player_collision(main)
+	await process_frame
+	_expect(main.phase == 0, "a fase e a 1")
+	_expect(_only(main.get_node("Scenery").segment_kinds(), cfg.PHASES[0]["scenery"]), "todo o cenario e o da Raul Lopes")
+	await _cleanup(main)
+
+
+func _test_ca16_chao_anda() -> void:
+	print("CA-16: o chao fica parado na tela inicial e desce durante a partida")
+	var main = _new_main()
+	await process_frame
+	var scenery = main.get_node("Scenery")
+	_expect(_covers_screen(scenery), "o cenario cobre a tela inicial")
+	var start_y = scenery.segments[0].position.y
+	await _wait(0.3)
+	_expect(scenery.segments[0].position.y == start_y, "na tela inicial o chao fica parado")
+	main.new_game()
+	_disable_player_collision(main)
+	await _wait(cfg.START_DELAY + 0.1)
+	var segment = scenery.segments[0]
+	var y_before = segment.position.y
+	await _wait(1.0)
+	var moved = segment.position.y - y_before
+	_expect(moved > cfg.SCROLL_SPEED * 0.8 and moved < cfg.SCROLL_SPEED * 1.2, "na partida o chao desce cerca de SCROLL_SPEED por segundo")
+	_expect(_scroll_in_steps(scenery, 5 * 720.0), "rolando 5 telas, o cenario cobre a tela o tempo todo")
+	await _cleanup(main)
+
+
+func _test_ca17_fase_2_ufpi() -> void:
+	print("CA-17: ao chegar ao minimo da fase 2, a UFPI comeca")
+	var main = _new_main()
+	await process_frame
+	main.new_game()
+	_disable_player_collision(main)
+	await _wait(cfg.START_DELAY + 0.1)
+	var phase_2 = cfg.PHASES[1]
+	_reach_phase_2(main)
+	_expect(main.phase == 1, "a fase passa a ser a 2")
+	_expect(main.get_node("HUD/MessageLabel").text == phase_2["name"], "o nome da fase 2 aparece")
+	_expect(is_equal_approx(main.get_node("MobTimer").wait_time, phase_2["mob_spawn_interval"]), "inimigos nascem no intervalo da fase 2")
+	var scenery = main.get_node("Scenery")
+	_expect(_scroll_in_steps(scenery, 3 * scenery.SEGMENT_HEIGHT), "na troca de fase o cenario continua cobrindo a tela")
+	_expect(_only(scenery.segment_kinds(), phase_2["scenery"]), "o cenario que entra por cima e o da UFPI")
+	await _cleanup(main)
+
+
+func _test_ca18_volta_a_fase_1() -> void:
+	print("CA-18: uma partida nova volta a fase 1")
+	var main = _new_main()
+	await process_frame
+	main.new_game()
+	_disable_player_collision(main)
+	await _wait(cfg.START_DELAY + 0.1)
+	_reach_phase_2(main)
+	_scroll_in_steps(main.get_node("Scenery"), 3 * main.get_node("Scenery").SEGMENT_HEIGHT)
+	main.game_over()
+	main.new_game()
+	_disable_player_collision(main)
+	await process_frame
+	_expect(main.phase == 0, "a fase volta a ser a 1")
+	_expect(_only(main.get_node("Scenery").segment_kinds(), cfg.PHASES[0]["scenery"]), "o cenario volta a ser o da Raul Lopes")
+	_expect(is_equal_approx(main.get_node("MobTimer").wait_time, cfg.PHASES[0]["mob_spawn_interval"]), "inimigos voltam ao intervalo da fase 1")
 	await _cleanup(main)

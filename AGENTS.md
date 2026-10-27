@@ -21,10 +21,11 @@ Se a spec estiver errada ou incompleta, pare e proponha o ajuste na spec; não c
 | Arquivo | Papel |
 | --- | --- |
 | `config.gd` | Autoload `Config`: textos, cores e números do jogo. Acesso: `Config.PLAYER_SPEED` |
-| `main.gd` / `main.tscn` | Orquestra a partida: `new_game()`, `game_over()`, timers de início, inimigos e pontuação |
+| `main.gd` / `main.tscn` | Orquestra a partida: `new_game()`, `game_over()`, timers de início, inimigos, pontuação e fases |
 | `player.gd` / `player.tscn` | Jogador (`Area2D`): movimento e sinal `hit` |
 | `mob.gd` / `mob.tscn` | Inimigo (`RigidBody2D`, grupo `mobs`) |
-| `hud.gd` / `hud.tscn` | Interface (`CanvasLayer`): pontuação, mensagens, botão de jogar |
+| `hud.gd` / `hud.tscn` | Interface (`CanvasLayer`): pontuação, mensagens, botão de jogar, seletor de personagem (criado por código) |
+| `scenery.gd` | Chão das fases (`Node2D` criado pelo `Main`): trechos que descem durante a partida; Raul Lopes e UFPI |
 | `tests/run_tests.gd` | Testes de aceitação, um grupo por CA-xx |
 | `scripts/check.sh` | Importa recursos e roda os testes (código de saída 0 = passou) |
 | `specs/` | Constituição, modelos, spec do jogo base e exemplos |

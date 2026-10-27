@@ -1,11 +1,13 @@
 extends SceneTree
-## Prepara a arte do tema B-R-O Bró (spec 001) a partir dos pacotes originais, todos CC0.
+## Prepara a arte do tema B-R-O Bró (specs 001 e 002) a partir dos pacotes originais, todos CC0.
 ## Só precisa rodar de novo se quiser trocar ou ajustar a arte; o resultado já está em art/teresina/.
 ##
 ## 1) Baixe e extraia numa pasta qualquer (fora do projeto):
 ##    - https://kenney.nl/assets/toon-characters   -> pasta kenney_toon-characters/
 ##    - https://kenney.nl/assets/particle-pack     -> pasta kenney_particle-pack/
 ##    - https://opengameart.org/content/shiny-sun  -> arquivo sun_shiny.png (na raiz da pasta)
+##    - https://kenney.nl/assets/racing-pack       -> pasta kenney_racing-pack/
+##    - https://kenney.nl/assets/pirate-pack       -> pasta kenney_pirate-pack/
 ## 2) Rode, na raiz do projeto:
 ##    godot --headless --path . -s res://scripts/preparar_arte.gd -- /caminho/da/pasta
 ## 3) Rode scripts/check.sh para a Godot importar os arquivos novos.
@@ -21,6 +23,20 @@ const CHARACTERS := {
 const CHARACTER_SIZE := Vector2i(144, 192)   # o jogador aparece com metade disso na tela
 const MOB_SIZE := Vector2i(128, 128)         # o inimigo aparece com 3/4 disso na tela
 
+# Peças do cenário das fases (spec 002), copiadas sem mudança: nome no jogo -> arquivo no pacote.
+const SCENERY := {
+	"asfalto": "kenney_racing-pack/PNG/Tiles/Asphalt road/road_asphalt22.png",
+	"grama": "kenney_racing-pack/PNG/Tiles/Grass/land_grass04.png",
+	"arvore_grande": "kenney_racing-pack/PNG/Objects/tree_large.png",
+	"arvore_pequena": "kenney_racing-pack/PNG/Objects/tree_small.png",
+	"carro_1": "kenney_racing-pack/PNG/Cars/car_blue_small_1.png",
+	"carro_2": "kenney_racing-pack/PNG/Cars/car_red_small_3.png",
+	"agua": "kenney_pirate-pack/PNG/Default size/Tiles/tile_73.png",
+	"areia": "kenney_pirate-pack/PNG/Default size/Tiles/tile_68.png",
+	"carnauba": "kenney_pirate-pack/PNG/Default size/Tiles/tile_71.png",
+	"aguape": "kenney_pirate-pack/PNG/Default size/Tiles/tile_70.png",
+}
+
 var src := ""
 
 
@@ -31,9 +47,10 @@ func _initialize() -> void:
 		quit(2)
 		return
 	src = args[0]
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR + "cenario"))
 	_prepare_characters()
 	_prepare_mobs()
+	_prepare_scenery()
 	print("Arte pronta em ", OUT_DIR)
 	quit()
 
@@ -72,6 +89,11 @@ func _prepare_mobs() -> void:
 	var dust_clouds := ["smoke_04", "smoke_07"]
 	for i in 2:
 		_save(_colored(_cropped(particles + dust_clouds[i] + ".png", 24), dust_colors), "mormaco_%d" % (i + 1))
+
+
+func _prepare_scenery() -> void:
+	for piece in SCENERY:
+		_save(Image.load_from_file(src + "/" + SCENERY[piece]), "cenario/" + piece)
 
 
 # ---------------------------------------------------------------- utilitarios
