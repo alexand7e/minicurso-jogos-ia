@@ -72,7 +72,7 @@ git apply specs/exemplos/dificuldade-progressiva/solucao.patch
 | --- | --- | --- |
 | Trocar textos, cores e velocidades | Fácil, sem IA | `config.gd` |
 | Recorde salvo, mostrado no fim da partida | Média | `main.gd`, `config.gd` |
-| Turbo do jogador ao segurar Shift | Média | `player.gd`, `config.gd`, ação nova em `project.godot` |
+| Turbo do jogador ao segurar Shift | Média | `player.gd`, `config.gd` |
 | Três vidas antes do fim de jogo | Média | `main.gd`, `player.gd`, `hud.gd` |
 | Novo tipo de inimigo (maior ou mais rápido) | Média | `main.gd`, `mob.gd` |
 | Trocar arte e música por pacotes CC0 | Fácil, mas exige baixar arquivos | `art/`, `README.md` (créditos) |
