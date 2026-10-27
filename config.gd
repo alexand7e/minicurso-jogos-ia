@@ -53,3 +53,8 @@ const PHASES := [
 	{"name": "Fase 1\nRaul Lopes", "scenery": "raul_lopes", "min_score": 0, "mob_spawn_interval": MOB_SPAWN_INTERVAL},
 	{"name": "Fase 2\nUFPI", "scenery": "ufpi", "min_score": 20, "mob_spawn_interval": 0.4},
 ]
+
+# --- Contato com o cenário (spec 003) ---
+# Quanto cada tipo de chão multiplica PLAYER_SPEED (1.0 = normal, menor = mais devagar).
+# Rio, prédios, árvores e carros são obstáculos: o jogador não atravessa (veja scenery.gd).
+const GROUND_SPEED := {"asfalto": 1.0, "calcada": 1.15, "grama": 0.75, "areia": 0.55}

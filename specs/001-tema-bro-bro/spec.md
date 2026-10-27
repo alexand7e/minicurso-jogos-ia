@@ -1,7 +1,7 @@
 # Spec 001: Tema B-R-O Bró
 
 > Primeira de duas specs do jogo da oficina com cara de Teresina. Esta troca a aparência e deixa escolher o
-> personagem; a mecânica nova (termômetro, cajuína e sombra) fica para a spec 003 (a 002 virou as fases), para cada etapa dar para
+> personagem; a mecânica nova (termômetro, cajuína e sombra) fica para a spec 005 (a 002 virou as fases; a 003 e a 004, o contato com o cenário e a profundidade), para cada etapa dar para
 > jogar e sentir sozinha.
 
 ## Por quê
@@ -23,7 +23,7 @@ Isso puxa o interesse para as próximas mudanças.
   Créditos do README.
 
 ## Fora do escopo
-- Termômetro, itens de cajuína e sombra de mangueira (spec 003).
+- Termômetro, itens de cajuína e sombra de mangueira (spec 005).
 - Diferença de jogo entre personagens: os três têm a mesma velocidade e o mesmo tamanho de colisão.
 - Qualquer mudança de regra: velocidade, pontuação, colisão e ritmo continuam iguais aos da spec 000.
 - Guardar a escolha de personagem depois de fechar o jogo.

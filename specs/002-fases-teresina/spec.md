@@ -1,6 +1,6 @@
 # Spec 002: Duas fases pelas ruas de Teresina
 
-> Continua a spec 001. O termômetro, a cajuína e a sombra de mangueira, que seriam a 002, passam para a spec 003.
+> Continua a spec 001. O termômetro, a cajuína e a sombra de mangueira, que seriam a 002, passam para a spec 005 (a 003 e a 004 são o contato com o cenário e a profundidade).
 
 ## Por quê
 Hoje a partida acontece num fundo liso: não dá a sensação de ir a lugar nenhum. Atravessar lugares que quem joga
@@ -24,11 +24,11 @@ depois e faz o tema de Teresina aparecer de verdade.
 
 ## Fora do escopo
 - Mais de duas fases, chefes, fim da fase ou tela de vitória: a fase 2 segue até o fim da partida.
-- Colisão com o cenário (rio, prédios, carros): o personagem passa por cima de tudo, como hoje.
+- Colisão com o cenário (rio, prédios, carros): o personagem passa por cima de tudo, como hoje (spec 003).
 - Carros andando, pedestres ou qualquer outro elemento que se mexa por conta própria.
 - Mudar como os inimigos nascem e se movem (só o intervalo entre eles muda na fase 2).
 - Fidelidade de mapa: as referências são reconhecíveis, não uma planta exata dos lugares.
-- Termômetro, cajuína e sombra (spec 003).
+- Termômetro, cajuína e sombra (spec 005).
 
 ## Critérios de aceitação
 - **CA-15**: Dada uma partida nova, então a fase é a 1 e todo o cenário à vista é o da Raul Lopes.

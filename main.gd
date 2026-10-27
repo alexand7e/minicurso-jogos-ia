@@ -18,6 +18,7 @@ func _ready():
 	scenery.name = "Scenery"
 	add_child(scenery)
 	move_child(scenery, $ColorRect.get_index() + 1)
+	$Player.scenery = scenery # o jogador esbarra nos obstáculos e sente o chão (spec 003)
 
 
 func game_over():
