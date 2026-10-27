@@ -22,10 +22,11 @@ Se a spec estiver errada ou incompleta, pare e proponha o ajuste na spec; não c
 | --- | --- |
 | `config.gd` | Autoload `Config`: textos, cores e números do jogo. Acesso: `Config.PLAYER_SPEED` |
 | `main.gd` / `main.tscn` | Orquestra a partida: `new_game()`, `game_over()`, timers de início, inimigos, pontuação e fases |
-| `player.gd` / `player.tscn` | Jogador (`Area2D`): movimento, esbarrão nos obstáculos e passo pelo chão, sinal `hit` |
+| `player.gd` / `player.tscn` | Jogador (`Area2D`): movimento, esbarrão nos obstáculos, passo pelo chão e sombra; sinal `hit` |
 | `mob.gd` / `mob.tscn` | Inimigo (`RigidBody2D`, grupo `mobs`) |
 | `hud.gd` / `hud.tscn` | Interface (`CanvasLayer`): pontuação, mensagens, botão de jogar, seletor de personagem (criado por código) |
 | `scenery.gd` | Chão das fases (`Node2D` criado pelo `Main`): trechos que descem durante a partida; Raul Lopes e UFPI; obstáculos (`add_obstacle`, `obstacle_rects`) e tipo de chão (`ground_at`) |
+| `tall.gd` | Algo alto no cenário (prédio, copa, mastro), desenhado em perspectiva a partir de `Config.DEPTH_CAMERA` |
 | `tests/run_tests.gd` | Testes de aceitação, um grupo por CA-xx |
 | `scripts/check.sh` | Importa recursos e roda os testes (código de saída 0 = passou) |
 | `specs/` | Constituição, modelos, spec do jogo base e exemplos |

@@ -10,10 +10,14 @@ extends Node2D
 ##
 ## Contato (spec 003): cada trecho também guarda o que é sólido (obstáculos, que o jogador não atravessa) e de
 ## que tipo é o chão (muda o passo do jogador, Config.GROUND_SPEED). O jogador consulta os dois em player.gd.
+##
+## Profundidade (spec 004): o que é alto (prédios, copas, o mastro da ponte) é um nó de tall.gd, desenhado em
+## perspectiva. O pé fica no chão, onde está o obstáculo; o topo se afasta da câmera.
 
 const SEGMENT_HEIGHT := 1536.0   # 12 ladrilhos de asfalto: o desenho dos ladrilhos emenda sem corte
 const WIDTH := 480.0
 const PIECES := "res://art/teresina/cenario/"
+const TALL := preload("res://tall.gd")
 
 const CONCRETE := Color(0.82, 0.8, 0.74)       # calçada
 const LANE_WHITE := Color(1, 1, 1, 0.85)       # faixas pintadas
@@ -25,6 +29,15 @@ const BRIDGE_Y := 560.0      # altura da Ponte Estaiada no trecho da Raul Lopes
 const OBSTACLE_LAYER := 2    # camada de colisão 2: o jogador e os inimigos só olham a 1, então não disparam "hit"
 const TRUNK := 0.5           # árvores bloqueiam pelo tronco: metade do tamanho desenhado, não a copa toda
 const CAR_BODY := 0.9        # carros bloqueiam quase pelo tamanho desenhado
+const SHADOW := Color(0, 0, 0, 0.25)
+
+# Alturas (spec 004), em pixels acima do chão. Mais alto = topo mais afastado, mais volume.
+const BUILDING_HEIGHT := 50.0
+const TREE_HEIGHT := 40.0
+const PALM_HEIGHT := 70.0    # carnaúba
+const MAST_HEIGHT := 180.0   # mastro da Ponte Estaiada
+const GATE_HEIGHT := 45.0    # portal da UFPI
+const SIGN_HEIGHT := 30.0    # placa da avenida
 
 var running = false # Verdadeiro durante a partida: só aí o chão anda.
 var phase = 0       # Fase cujo cenário é usado nos trechos novos (posição em Config.PHASES).
@@ -176,9 +189,9 @@ func _build_raul_lopes(segment):
 	add_obstacle(segment, Rect2(344, 0, WIDTH - 344, BRIDGE_Y), "rio")
 	add_obstacle(segment, Rect2(344, BRIDGE_Y + 80, WIDTH - 344, SEGMENT_HEIGHT - BRIDGE_Y - 80), "rio")
 	for y in [180, 420, 940, 1180, 1420]:
-		_solid_piece(segment, "arvore_pequena", Vector2(302, y), 0.3, "arvore")
+		_tree(segment, "arvore_pequena", Vector2(302, y), 0.3, "arvore", TREE_HEIGHT)
 	for y in [100, 380, 760, 1040, 1320]:
-		_solid_piece(segment, "carnauba", Vector2(24, y), 0.9, "carnauba")
+		_tree(segment, "carnauba", Vector2(24, y), 0.9, "carnauba", PALM_HEIGHT)
 	_parked_cars(segment, [620, 1300])
 	# Aguapés boiando no rio.
 	for spot in [Vector2(380, 160), Vector2(452, 300), Vector2(398, 860), Vector2(458, 1060), Vector2(372, 1340)]:
@@ -191,7 +204,7 @@ func _build_raul_lopes(segment):
 	_text(segment, "RAUL\nLOPES", Vector2(108, 280), 22, LANE_WHITE)
 
 
-# Ponte Estaiada cruzando o rio a partir da avenida, com o mastro e os cabos vistos de cima.
+# Ponte Estaiada cruzando o rio a partir da avenida, com o mastro alto e os cabos descendo dele.
 func _build_bridge(segment, y):
 	var deck = Rect2(272, y, WIDTH - 272, 80)
 	var mast = Vector2(412, y + 40)
@@ -203,14 +216,15 @@ func _build_bridge(segment, y):
 	shadow.color = Color(0, 0, 0, 0.22)
 	shadow.polygon = PackedVector2Array([mast + Vector2(-6, 0), mast + Vector2(6, 0), mast + Vector2(66, 300), mast + Vector2(54, 302)])
 	segment.add_child(shadow)
-	# Cabos saindo do topo do mastro até as bordas do tabuleiro.
+	# Mastro com o mirante no alto e os cabos saindo do topo até as bordas do tabuleiro.
+	var foot = Rect2(mast - Vector2(13, 13), Vector2(26, 26))
+	add_obstacle(segment, foot, "mastro")
+	var tower = _tall(segment, foot, MAST_HEIGHT)
+	tower.wall_color = Color(0.75, 0.75, 0.8)
+	tower.round_top = true
 	for x in [292, 322, 352, 382, 442, 472, 502]:
-		_line(segment, Color(1, 1, 1, 0.9), mast, Vector2(x, y + 4), 1.5)
-		_line(segment, Color(1, 1, 1, 0.9), mast, Vector2(x, y + 76), 1.5)
-	# Mastro com o mirante no alto.
-	_circle(segment, Color(0.75, 0.75, 0.8), mast, 13)
-	_circle(segment, Color.WHITE, mast, 9)
-	add_obstacle(segment, Rect2(mast - Vector2(13, 13), Vector2(26, 26)), "mastro")
+		tower.cables.append(Vector2(x, y + 4))
+		tower.cables.append(Vector2(x, y + 76))
 	_text(segment, "Ponte\nEstaiada", Vector2(412, y + 140), 18, Color.WHITE)
 
 
@@ -220,12 +234,16 @@ func _build_ufpi(segment):
 	_build_avenue(segment)
 	_ground(segment, "calcada", Rect2(280, 0, 20, SEGMENT_HEIGHT))
 	for y in [60, 300, 980, 1300]:
-		_solid_piece(segment, "arvore_pequena", Vector2(24, y), 0.3, "arvore")
+		_tree(segment, "arvore_pequena", Vector2(24, y), 0.3, "arvore", TREE_HEIGHT)
 	_parked_cars(segment, [420, 1160])
-	# Placa da avenida.
-	_box(segment, Color.WHITE, Rect2(302, 22, 176, 40))
-	_box(segment, Color(0.1, 0.45, 0.25), Rect2(304, 24, 172, 36))
-	_text(segment, "Av. Universitária", Vector2(390, 42), 13, Color.WHITE)
+	# Placa da avenida, no alto, com a sombra no chão.
+	_box(segment, SHADOW, Rect2(308, 30, 176, 40))
+	var plate = _tall(segment, Rect2(302, 22, 176, 40), SIGN_HEIGHT)
+	plate.walls = false
+	plate.roof_color = Color(0.1, 0.45, 0.25)
+	plate.label = "Av. Universitária"
+	plate.label_size = 13
+	plate.label_color = Color.WHITE
 	# Prédios do campus.
 	_building(segment, Rect2(308, 100, 80, 100), "CCN", Color(0.93, 0.9, 0.82))
 	_building(segment, Rect2(396, 100, 80, 100), "CCHL", Color(0.9, 0.84, 0.74))
@@ -237,7 +255,7 @@ func _build_ufpi(segment):
 	_building(segment, Rect2(396, 1120, 80, 100), "CCS", Color(0.93, 0.86, 0.86))
 	# Muitas árvores: Teresina é a "Cidade Verde".
 	for spot in [Vector2(340, 280), Vector2(440, 270), Vector2(390, 400), Vector2(340, 1030), Vector2(440, 1040), Vector2(350, 1300), Vector2(440, 1330)]:
-		_solid_piece(segment, "arvore_grande", spot, 0.42, "arvore")
+		_tree(segment, "arvore_grande", spot, 0.42, "arvore", TREE_HEIGHT)
 	_crosswalk(segment, 500)
 	# Rua cruzando no fim do trecho: ajuda a emendar com o trecho de baixo, seja da fase que for.
 	_ground(segment, "asfalto", Rect2(280, SEGMENT_HEIGHT - 80, WIDTH - 280, 80))
@@ -246,12 +264,19 @@ func _build_ufpi(segment):
 # Entrada do campus: rua para dentro e o portal com o letreiro.
 func _build_gate(segment, y):
 	_ground(segment, "asfalto", Rect2(280, y, WIDTH - 280, 72))
+	_box(segment, SHADOW, Rect2(300, y + 34, 176, 40))
 	for x in [300, 458]:
-		_box(segment, Color(0.35, 0.35, 0.4), Rect2(x, y - 14, 18, 100))
 		add_obstacle(segment, Rect2(x, y - 14, 18, 100), "portal")
-	_box(segment, Color(0, 0, 0, 0.25), Rect2(300, y + 34, 176, 40))
-	_box(segment, Color(0.1, 0.28, 0.6), Rect2(300, y + 14, 176, 44))
-	_text(segment, "UFPI", Vector2(388, y + 36), 30, Color.WHITE)
+		var pillar = _tall(segment, Rect2(x, y - 14, 18, 100), GATE_HEIGHT)
+		pillar.roof_color = Color(0.45, 0.45, 0.5)
+		pillar.wall_color = Color(0.35, 0.35, 0.4)
+	# Letreiro no alto, entre os pilares: passa-se por baixo dele.
+	var sign = _tall(segment, Rect2(300, y + 14, 176, 44), GATE_HEIGHT)
+	sign.walls = false
+	sign.roof_color = Color(0.1, 0.28, 0.6)
+	sign.label = "UFPI"
+	sign.label_size = 30
+	sign.label_color = Color.WHITE
 
 
 # Estacionamento com vagas e dois carros parados.
@@ -263,13 +288,35 @@ func _build_parking(segment, rect):
 	_solid_piece(segment, "carro_2", rect.position + Vector2(65, 30), 0.55, "carro", CAR_BODY)
 
 
-# Prédio visto de cima: sombra, telhado, borda e o nome no telhado.
+# Prédio: sombra no chão, pé que bloqueia e, no alto, paredes e telhado com o nome.
 func _building(segment, rect, label, roof):
-	_box(segment, Color(0, 0, 0, 0.25), Rect2(rect.position + Vector2(6, 6), rect.size))
-	_box(segment, roof.darkened(0.25), rect)
+	_box(segment, SHADOW, Rect2(rect.position + Vector2(10, 10), rect.size))
 	add_obstacle(segment, rect, "predio")
-	_box(segment, roof, rect.grow(-4))
-	_text(segment, label, rect.get_center(), 20 if label.length() <= 4 else 16, Color(0.25, 0.25, 0.3))
+	var building = _tall(segment, rect, BUILDING_HEIGHT)
+	building.roof_color = roof
+	building.wall_color = roof.darkened(0.35)
+	building.label = label
+	building.label_size = 20 if label.length() <= 4 else 16
+
+
+# Árvore ou carnaúba: sombra redonda no chão, tronco que bloqueia (TRUNK) e copa no alto.
+func _tree(segment, piece, pos, scale_factor, kind, height):
+	var texture = load(PIECES + piece + ".png")
+	var size = texture.get_size() * scale_factor
+	_circle(segment, SHADOW, pos + Vector2(6, 6), size.x * 0.4)
+	add_obstacle(segment, Rect2(pos - size * TRUNK / 2, size * TRUNK), kind)
+	var canopy = _tall(segment, Rect2(pos - size / 2, size), height)
+	canopy.walls = false
+	canopy.texture = texture
+
+
+# Algo alto (tall.gd) com o pé em "base" e o topo a "height" pixels do chão.
+func _tall(segment, base, height):
+	var thing = TALL.new()
+	thing.base = base
+	thing.height = height
+	segment.add_child(thing)
+	return thing
 
 
 # ------------------------------------------------------------- utilitarios
@@ -334,14 +381,6 @@ func _circle(segment, color, center, radius):
 	circle.color = color
 	circle.polygon = points
 	segment.add_child(circle)
-
-
-func _line(segment, color, from, to, width):
-	var line = Line2D.new()
-	line.default_color = color
-	line.width = width
-	line.points = PackedVector2Array([from, to])
-	segment.add_child(line)
 
 
 # Texto centrado em "center"; "angle" gira o texto (PI = de cabeça para baixo).

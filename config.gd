@@ -58,3 +58,10 @@ const PHASES := [
 # Quanto cada tipo de chão multiplica PLAYER_SPEED (1.0 = normal, menor = mais devagar).
 # Rio, prédios, árvores e carros são obstáculos: o jogador não atravessa (veja scenery.gd).
 const GROUND_SPEED := {"asfalto": 1.0, "calcada": 1.15, "grama": 0.75, "areia": 0.55}
+
+# --- Profundidade (spec 004; veja tall.gd) ---
+# A câmera olha o chão de cima, de DEPTH_CAMERA_HEIGHT pixels de altura sobre o ponto DEPTH_CAMERA da tela.
+# O que é alto (prédios, copas, o mastro da ponte) aparece afastado desse ponto. Ponto mais para baixo na tela =
+# câmera olhando a rua à frente. Câmera mais alta = efeito mais suave; mais baixa = mais exagerado.
+const DEPTH_CAMERA := Vector2(240, 600)
+const DEPTH_CAMERA_HEIGHT := 1000.0

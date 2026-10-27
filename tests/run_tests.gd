@@ -3,7 +3,7 @@ extends SceneTree
 ##
 ## Cada grupo de verificações corresponde a um critério de aceitação (CA-xx)
 ## escrito em specs/NNN-*/spec.md (CA-01 a CA-04 na spec 000, CA-05 a CA-09 na
-## spec 001, CA-15 a CA-18 na spec 002, CA-24 a CA-27 na spec 003). Ao criar uma spec nova, adicione
+## spec 001, CA-15 a CA-18 na spec 002, CA-24 a CA-27 na spec 003, CA-30 a CA-32 na spec 004). Ao criar uma spec nova, adicione
 ## aqui uma função _test_... para cada critério novo.
 ##
 ## Como rodar: scripts/check.sh (veja o README para o comando completo).
@@ -37,6 +37,9 @@ func _run_all() -> void:
 	await _test_ca25_chao_empurra()
 	await _test_ca26_chao_muda_o_passo()
 	await _test_ca27_obstaculos_das_fases()
+	await _test_ca30_altura_em_perspectiva()
+	await _test_ca31_alto_e_ordem()
+	await _test_ca32_sombras()
 	print("")
 	if failures == 0:
 		print("OK: %d verificacoes passaram." % checks)
@@ -137,6 +140,16 @@ func _obstacle_kinds(scenery: Node) -> Array:
 # Verdadeiro se "rect" (na tela) toca algum obstáculo do cenário.
 func _blocked(scenery: Node, rect: Rect2) -> bool:
 	return scenery.obstacle_rects().any(func(obstacle): return obstacle.intersects(rect))
+
+
+# Coisas altas (tall.gd) dos trechos montados.
+func _tall_things(scenery: Node) -> Array:
+	var found := []
+	for segment in scenery.segments:
+		for child in segment.get_children():
+			if child.has_method("top_rect"):
+				found.append(child)
+	return found
 
 
 # Segura "action" por "seconds" e devolve quanto o jogador andou.
@@ -498,4 +511,73 @@ func _test_ca27_obstaculos_das_fases() -> void:
 		if not all_obstacles.any(func(obstacle): return obstacle.intersects(column)):
 			corridor = true
 	_expect(corridor, "a avenida tem um corredor livre de cima a baixo nas duas fases")
+	await _cleanup(main)
+
+
+func _test_ca30_altura_em_perspectiva() -> void:
+	print("CA-30: o que e alto aparece em perspectiva e muda conforme o chao anda")
+	var tall = load("res://tall.gd")
+	var camera: Vector2 = cfg.DEPTH_CAMERA
+	_expect(tall.project(camera, 100.0).is_equal_approx(camera), "bem embaixo da camera, o topo nao se afasta")
+	var near: Vector2 = tall.project(camera + Vector2(100, 0), 50.0) - (camera + Vector2(100, 0))
+	var far: Vector2 = tall.project(camera + Vector2(200, 0), 50.0) - (camera + Vector2(200, 0))
+	var higher: Vector2 = tall.project(camera + Vector2(100, 0), 100.0) - (camera + Vector2(100, 0))
+	_expect(near.x > 0 and far.x > near.x and higher.x > near.x, "mais longe da camera ou mais alto, o topo se afasta mais")
+	var main = _new_main()
+	await process_frame
+	var scenery = main.get_node("Scenery")
+	scenery.reset(1)
+	var buildings = _tall_things(scenery).filter(func(thing): return thing.walls and thing.label != "")
+	_expect(buildings.size() > 0, "a UFPI tem predios com altura")
+	if buildings.size() > 0:
+		var building = buildings[0]
+		var base_before = building.base
+		var gap_before = building.top_rect().position - building.base.position
+		scenery.scroll(200)
+		var gap_after = building.top_rect().position - building.base.position
+		_expect(not gap_before.is_equal_approx(gap_after), "ao rolar o chao, o topo muda de lugar em relacao ao pe")
+		_expect(building.base == base_before, "o pe continua no mesmo lugar do trecho")
+	await _cleanup(main)
+
+
+func _test_ca31_alto_e_ordem() -> void:
+	print("CA-31: as fases tem coisas altas, por cima do jogador e por baixo dos inimigos")
+	var main = _new_main()
+	await process_frame
+	var scenery = main.get_node("Scenery")
+	var things = _tall_things(scenery)
+	_expect(things.any(func(thing): return not thing.cables.is_empty()), "a Raul Lopes tem o mastro com cabos")
+	_expect(things.any(func(thing): return thing.texture != null), "a Raul Lopes tem copas no alto")
+	scenery.reset(1)
+	things = _tall_things(scenery)
+	_expect(things.any(func(thing): return thing.walls and thing.label != ""), "a UFPI tem predios")
+	_expect(things.any(func(thing): return thing.texture != null), "a UFPI tem copas no alto")
+	var tall_z = things[0].z_index if things.size() > 0 else 0
+	_expect(main.get_node("Player").z_index < tall_z, "o alto aparece por cima do jogador")
+	main.new_game()
+	_disable_player_collision(main)
+	main._on_MobTimer_timeout()
+	await process_frame
+	var mobs = get_nodes_in_group("mobs")
+	_expect(mobs.size() > 0 and mobs.all(func(mob): return mob.z_index > tall_z), "os inimigos aparecem por cima do alto")
+	await _cleanup(main)
+
+
+func _test_ca32_sombras() -> void:
+	print("CA-32: jogador e inimigos tem sombra no chao, abaixo deles")
+	var main = _new_main()
+	await process_frame
+	main.new_game()
+	_disable_player_collision(main)
+	var player = main.get_node("Player")
+	player.position = Vector2(160, 300)
+	await _walk(player, &"move_up", 0.1)
+	_expect(player.has_node("Shadow") and player.get_node("Shadow").global_position.y > player.global_position.y, "andando para cima, a sombra fica nos pes")
+	await _walk(player, &"move_down", 0.1)
+	_expect(player.has_node("Shadow") and player.get_node("Shadow").global_position.y > player.global_position.y, "andando para baixo (jogador girado), a sombra continua nos pes")
+	for i in 5:
+		main._on_MobTimer_timeout()
+	await process_frame
+	var mobs = get_nodes_in_group("mobs")
+	_expect(mobs.size() > 0 and mobs.all(func(mob): return mob.has_node("Shadow") and mob.get_node("Shadow").global_position.y > mob.global_position.y), "cada inimigo tem a sombra abaixo dele, em qualquer direcao")
 	await _cleanup(main)

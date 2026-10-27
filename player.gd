@@ -6,8 +6,11 @@ var speed = Config.PLAYER_SPEED # Velocidade do jogador (pixels/s), definida em 
 var screen_size # Size of the game window.
 var scenery = null # Chão das fases (scenery.gd), passado pelo Main: diz o que é obstáculo e o tipo de chão.
 
+const SHADOW_FEET := Vector2(0, 44) # onde ficam os pés, a partir do centro do jogador (spec 004)
+
 func _ready():
 	screen_size = get_viewport_rect().size
+	_add_shadow()
 	hide()
 
 
@@ -42,6 +45,24 @@ func _process(delta):
 	elif velocity.y != 0:
 		$AnimatedSprite2D.animation = &"up"
 		rotation = PI if velocity.y > 0 else 0
+
+	# A sombra fica nos pés mesmo com o jogador girado (andando para baixo ele dá meia volta).
+	$Shadow.rotation = -rotation
+	$Shadow.position = SHADOW_FEET.rotated(-rotation)
+
+
+# Sombra no chão (spec 004): uma elipse escura, desenhada por baixo do personagem.
+func _add_shadow():
+	var points = PackedVector2Array()
+	for i in 16:
+		points.append(Vector2.from_angle(TAU * i / 16) * Vector2(22, 8))
+	var shadow = Polygon2D.new()
+	shadow.name = "Shadow"
+	shadow.polygon = points
+	shadow.color = Color(0, 0, 0, 0.3)
+	shadow.z_index = -2 # abaixo do personagem e do rastro
+	shadow.position = SHADOW_FEET
+	add_child(shadow)
 
 
 # ------------------------------------------------- contato com o cenário (spec 003)
