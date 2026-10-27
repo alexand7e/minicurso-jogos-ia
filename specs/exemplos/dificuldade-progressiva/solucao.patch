@@ -1,0 +1,77 @@
+diff --git a/config.gd b/config.gd
+index 50c0d03..8fc0faf 100644
+--- a/config.gd
++++ b/config.gd
+@@ -24,6 +24,8 @@ const PLAYER_SPEED := 400.0           # pixels por segundo
+ const MOB_MIN_SPEED := 150.0          # pixels por segundo
+ const MOB_MAX_SPEED := 250.0          # precisa ser maior ou igual ao mínimo
+ const MOB_SPAWN_INTERVAL := 0.5       # segundos entre um inimigo e o próximo
++const MOB_SPEED_GAIN_PER_POINT := 2.0 # aumento de velocidade por ponto (0 desliga a dificuldade progressiva)
++const MOB_SPEED_CAP := 600.0          # nenhum inimigo passa desta velocidade
+ 
+ # --- Ritmo e pontuação ---
+ const START_DELAY := 2.0              # segundos entre "Preparar" e o início da partida
+diff --git a/main.gd b/main.gd
+index 67cc29f..7b718b5 100644
+--- a/main.gd
++++ b/main.gd
+@@ -46,14 +46,24 @@ func _on_MobTimer_timeout():
+ 	direction += randf_range(-PI / 4, PI / 4)
+ 	mob.rotation = direction
+ 
+-	# Choose the velocity for the mob.
+-	var velocity = Vector2(randf_range(Config.MOB_MIN_SPEED, Config.MOB_MAX_SPEED), 0.0)
++	# Choose the velocity for the mob (faixa cresce com a pontuação).
++	var speed_range = mob_speed_range(score)
++	var velocity = Vector2(randf_range(speed_range.x, speed_range.y), 0.0)
+ 	mob.linear_velocity = velocity.rotated(direction)
+ 
+ 	# Spawn the mob by adding it to the Main scene.
+ 	add_child(mob)
+ 
+ 
++# Faixa de velocidade (mínima, máxima) dos inimigos para uma pontuação.
++# Cada ponto soma MOB_SPEED_GAIN_PER_POINT, limitado por MOB_SPEED_CAP.
++func mob_speed_range(points: int) -> Vector2:
++	var gain = points * Config.MOB_SPEED_GAIN_PER_POINT
++	var low = minf(Config.MOB_MIN_SPEED + gain, Config.MOB_SPEED_CAP)
++	var high = minf(Config.MOB_MAX_SPEED + gain, Config.MOB_SPEED_CAP)
++	return Vector2(low, high)
++
++
+ func _on_ScoreTimer_timeout():
+ 	score += Config.SCORE_PER_SECOND
+ 	$HUD.update_score(score)
+diff --git a/tests/run_tests.gd b/tests/run_tests.gd
+index b249803..1850d95 100644
+--- a/tests/run_tests.gd
++++ b/tests/run_tests.gd
+@@ -23,6 +23,7 @@ func _run_all() -> void:
+ 	await _test_ca02_pontuacao_sobe()
+ 	await _test_ca03_inimigos_surgem()
+ 	await _test_ca04_colisao_encerra()
++	await _test_ca05_a_07_dificuldade_progressiva()
+ 	print("")
+ 	if failures == 0:
+ 		print("OK: %d verificacoes passaram." % checks)
+@@ -135,3 +136,20 @@ func _test_ca04_colisao_encerra() -> void:
+ 	_expect(main.get_node("MobTimer").is_stopped(), "nascimento de inimigos para")
+ 	_expect(main.get_node("HUD/MessageLabel").text == cfg.MSG_GAME_OVER, "mensagem de fim de jogo aparece")
+ 	await _cleanup(main)
++
++
++func _test_ca05_a_07_dificuldade_progressiva() -> void:
++	print("CA-05 a CA-07: inimigos ficam mais rapidos com a pontuacao, ate um teto")
++	var main = _new_main()
++	await process_frame
++	var base = main.mob_speed_range(0)
++	_expect(is_equal_approx(base.x, cfg.MOB_MIN_SPEED) and is_equal_approx(base.y, cfg.MOB_MAX_SPEED),
++		"CA-05: com 0 pontos a faixa e a base (MOB_MIN_SPEED..MOB_MAX_SPEED)")
++	var ten = main.mob_speed_range(10)
++	var gain = 10 * cfg.MOB_SPEED_GAIN_PER_POINT
++	_expect(is_equal_approx(ten.x, cfg.MOB_MIN_SPEED + gain) and is_equal_approx(ten.y, cfg.MOB_MAX_SPEED + gain),
++		"CA-06: com 10 pontos as duas pontas sobem 10 x MOB_SPEED_GAIN_PER_POINT")
++	var huge = main.mob_speed_range(100000)
++	_expect(huge.x <= cfg.MOB_SPEED_CAP and huge.y <= cfg.MOB_SPEED_CAP,
++		"CA-07: com pontuacao enorme nenhuma ponta passa de MOB_SPEED_CAP")
++	await _cleanup(main)
