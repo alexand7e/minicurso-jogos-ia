@@ -1,5 +1,9 @@
 # Minicurso: jogos com IA e SDD
 
+> **Branch `demo/dificuldade-progressiva`:** o resultado da demonstração ao vivo, com um commit por etapa do SDD
+> (`git log --oneline main..`). A spec, o plano e as tarefas estão em `specs/001-dificuldade-progressiva/`.
+> O check dá 20 verificações. Para a prática, volte à `main`.
+
 Projeto base do minicurso. É o jogo oficial **Dodge the Creeps** do Godot (arte, música e código prontos), com três acréscimos para trabalhar com IA:
 
 - `config.gd`: textos, cores e números do jogo em um só arquivo, para ver resultado em segundos.
@@ -15,8 +19,8 @@ está em [`docs/roteiro.md`](docs/roteiro.md), bloco a bloco, com o que usar do 
 
 | Branch | Para quê | `scripts/check.sh` |
 | --- | --- | --- |
-| `main` | Ponto de partida de todo mundo (esta) | 17 verificações |
-| `demo/dificuldade-progressiva` | O resultado da demonstração ao vivo, com um commit por etapa do SDD | 20 verificações |
+| `main` | Ponto de partida de todo mundo | 17 verificações |
+| `demo/dificuldade-progressiva` | O resultado da demonstração ao vivo, com um commit por etapa do SDD (esta) | 20 verificações |
 | `oficina-teresina` | Exemplo avançado: quatro specs seguidas, um jogo com a cara de Teresina | 82 verificações |
 | `equipe/<nome>` | A mudança de cada equipe na prática: `git switch -c equipe/<nome>` a partir da `main` | — |
 
