@@ -3,6 +3,8 @@
 Acompanha a apresentação "Minicurso: Jogos com IA e SDD". Cada bloco diz o que se faz e o que se usa do repositório.
 O objetivo é cada equipe sair com **uma mudança jogável**: decidir, escrever, verificar.
 
+Os comandos que o instrutor roda antes, durante e depois da aula estão em [`comandos-do-instrutor.md`](comandos-do-instrutor.md).
+
 | # | Bloco | Tempo | No repositório |
 | --- | --- | --- | --- |
 | 1 | Abertura: o destino | 8 min | — |

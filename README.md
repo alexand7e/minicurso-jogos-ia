@@ -15,7 +15,8 @@ Projeto base do minicurso. É o jogo oficial **Dodge the Creeps** do Godot (arte
 ## Roteiro da aula e branches
 
 A aula de 2 horas (abertura, equipe, planejamento, Godot, SDD, estudo de caso, demonstração, prática e fechamento)
-está em [`docs/roteiro.md`](docs/roteiro.md), bloco a bloco, com o que usar do repositório em cada um.
+está em [`docs/roteiro.md`](docs/roteiro.md), bloco a bloco, com o que usar do repositório em cada um. Os comandos do
+instrutor, na ordem, estão em [`docs/comandos-do-instrutor.md`](docs/comandos-do-instrutor.md).
 
 | Branch | Para quê | `scripts/check.sh` |
 | --- | --- | --- |
