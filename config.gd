@@ -24,6 +24,8 @@ const PLAYER_SPEED := 400.0           # pixels por segundo
 const MOB_MIN_SPEED := 150.0          # pixels por segundo
 const MOB_MAX_SPEED := 250.0          # precisa ser maior ou igual ao mínimo
 const MOB_SPAWN_INTERVAL := 0.5       # segundos entre um inimigo e o próximo
+const MOB_SPEED_GAIN_PER_POINT := 2.0 # aumento de velocidade por ponto (0 desliga a dificuldade progressiva)
+const MOB_SPEED_CAP := 600.0          # nenhum inimigo passa desta velocidade
 
 # --- Ritmo e pontuação ---
 const START_DELAY := 2.0              # segundos entre "Preparar" e o início da partida
