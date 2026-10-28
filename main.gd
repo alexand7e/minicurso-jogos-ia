@@ -46,12 +46,22 @@ func _on_MobTimer_timeout():
 	direction += randf_range(-PI / 4, PI / 4)
 	mob.rotation = direction
 
-	# Choose the velocity for the mob.
-	var velocity = Vector2(randf_range(Config.MOB_MIN_SPEED, Config.MOB_MAX_SPEED), 0.0)
+	# Choose the velocity for the mob (faixa cresce com a pontuação).
+	var speed_range = mob_speed_range(score)
+	var velocity = Vector2(randf_range(speed_range.x, speed_range.y), 0.0)
 	mob.linear_velocity = velocity.rotated(direction)
 
 	# Spawn the mob by adding it to the Main scene.
 	add_child(mob)
+
+
+# Faixa de velocidade (mínima, máxima) dos inimigos para uma pontuação.
+# Cada ponto soma MOB_SPEED_GAIN_PER_POINT, limitado por MOB_SPEED_CAP.
+func mob_speed_range(points: int) -> Vector2:
+	var gain = points * Config.MOB_SPEED_GAIN_PER_POINT
+	var low = minf(Config.MOB_MIN_SPEED + gain, Config.MOB_SPEED_CAP)
+	var high = minf(Config.MOB_MAX_SPEED + gain, Config.MOB_SPEED_CAP)
+	return Vector2(low, high)
 
 
 func _on_ScoreTimer_timeout():
