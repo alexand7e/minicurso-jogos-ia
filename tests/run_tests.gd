@@ -23,6 +23,7 @@ func _run_all() -> void:
 	await _test_ca02_pontuacao_sobe()
 	await _test_ca03_inimigos_surgem()
 	await _test_ca04_colisao_encerra()
+	await _test_ca05_a_07_dificuldade_progressiva()
 	print("")
 	if failures == 0:
 		print("OK: %d verificacoes passaram." % checks)
@@ -134,4 +135,21 @@ func _test_ca04_colisao_encerra() -> void:
 	_expect(main.get_node("ScoreTimer").is_stopped(), "contagem de pontos para")
 	_expect(main.get_node("MobTimer").is_stopped(), "nascimento de inimigos para")
 	_expect(main.get_node("HUD/MessageLabel").text == cfg.MSG_GAME_OVER, "mensagem de fim de jogo aparece")
+	await _cleanup(main)
+
+
+func _test_ca05_a_07_dificuldade_progressiva() -> void:
+	print("CA-05 a CA-07: inimigos ficam mais rapidos com a pontuacao, ate um teto")
+	var main = _new_main()
+	await process_frame
+	var base = main.mob_speed_range(0)
+	_expect(is_equal_approx(base.x, cfg.MOB_MIN_SPEED) and is_equal_approx(base.y, cfg.MOB_MAX_SPEED),
+		"CA-05: com 0 pontos a faixa e a base (MOB_MIN_SPEED..MOB_MAX_SPEED)")
+	var ten = main.mob_speed_range(10)
+	var gain = 10 * cfg.MOB_SPEED_GAIN_PER_POINT
+	_expect(is_equal_approx(ten.x, cfg.MOB_MIN_SPEED + gain) and is_equal_approx(ten.y, cfg.MOB_MAX_SPEED + gain),
+		"CA-06: com 10 pontos as duas pontas sobem 10 x MOB_SPEED_GAIN_PER_POINT")
+	var huge = main.mob_speed_range(100000)
+	_expect(huge.x <= cfg.MOB_SPEED_CAP and huge.y <= cfg.MOB_SPEED_CAP,
+		"CA-07: com pontuacao enorme nenhuma ponta passa de MOB_SPEED_CAP")
 	await _cleanup(main)
