@@ -16,7 +16,8 @@ Projeto base do minicurso. É o jogo oficial **Dodge the Creeps** do Godot (arte
 
 A aula de 2 horas (abertura, equipe, planejamento, Godot, SDD, estudo de caso, demonstração, prática e fechamento)
 está em [`docs/roteiro.md`](docs/roteiro.md), bloco a bloco, com o que usar do repositório em cada um. Os comandos do
-instrutor, na ordem, estão em [`docs/comandos-do-instrutor.md`](docs/comandos-do-instrutor.md).
+instrutor, na ordem, estão em [`docs/comandos-do-instrutor.md`](docs/comandos-do-instrutor.md). No Windows, para escolher
+uma versão e abrir o jogo: `powershell -ExecutionPolicy Bypass -File scripts\jogar.ps1`.
 
 | Branch | Para quê | `scripts/check.sh` |
 | --- | --- | --- |
@@ -91,7 +92,7 @@ Ou mostre o ciclo já feito, com um commit por etapa (spec, plano, tarefas e cad
 
 ```bash
 git switch demo/dificuldade-progressiva
-git log --oneline main..
+git log --oneline --no-merges main..
 ```
 
 Outro exemplo, só de spec: `specs/exemplos/voo-com-obstaculos/spec.md`, o estudo de caso do jogo de voo de um botão.
@@ -121,6 +122,7 @@ tall.gd              prédios, copas e mastro em perspectiva (profundidade)
 art/ fonts/          arte, música e fonte do demo
 tests/run_tests.gd   testes de aceitação (um grupo por CA-xx)
 scripts/check.sh     importa e roda os testes sem janela
+scripts/jogar.ps1    Windows: escolhe a versão (branch), importa e abre o jogo
 specs/               constituição, modelos (spec, plano, tarefas, cartão, retrospectiva), spec base e exemplos
 docs/                roteiro da aula e ficha de referências
 AGENTS.md            regras para a IA (CLAUDE.md aponta para ele)
