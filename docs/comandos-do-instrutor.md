@@ -7,6 +7,34 @@ Os comandos para rodar antes, durante e depois da aula, na ordem. O roteiro comp
 - Os que começam com `/` vão no **painel do Claude Code no VS Code**.
 - O que se espera ver depois de cada comando está no comentário ao lado.
 
+## Atalho no Windows: `scripts/jogar.ps1`
+
+Para trocar de versão e abrir o jogo sem decorar comandos, rode no PowerShell, na pasta do repositório:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\jogar.ps1
+```
+
+Ele faz quatro coisas:
+- mostra um menu com as três versões (1 `main`, 2 `demo/dificuldade-progressiva`, 3 `oficina-teresina`);
+- recusa trocar se houver mudanças não salvas;
+- oferece fechar o Godot se ele estiver aberto;
+- troca de branch, importa a arte e abre o jogo.
+
+| Opção | O que faz |
+| --- | --- |
+| `-Versao main`, `-Versao demo` ou `-Versao teresina` | Pula o menu |
+| `-Editor` | Abre o editor (F5 joga) em vez do jogo |
+| `-Check` | Roda os testes antes de abrir e mostra o número esperado |
+| `-SemAbrir` | Não abre o Godot (útil com `-Check`) |
+| `-FecharGodot` | Fecha o Godot aberto sem perguntar |
+
+Exemplo, para conferir as três versões de uma vez na véspera:
+
+```powershell
+foreach ($v in "main", "demo", "teresina") { powershell -ExecutionPolicy Bypass -File scripts\jogar.ps1 -Versao $v -Check -SemAbrir }
+```
+
 ## Antes da aula (na véspera)
 
 ### 1. Atualizar a cópia local e deixar o Godot à mão
@@ -30,7 +58,7 @@ bash scripts/check.sh                    # OK: 17 verificacoes passaram.
 
 git switch demo/dificuldade-progressiva
 bash scripts/check.sh                    # OK: 20 verificacoes passaram.
-git log --oneline main..                 # 7 commits: spec, plano, tarefas, T1, T2, T3, README
+git log --oneline --no-merges main..     # 7 commits: spec, plano, tarefas, T1, T2, T3, README
 
 git switch oficina-teresina
 bash scripts/check.sh                    # OK: 82 verificacoes passaram.
@@ -117,7 +145,7 @@ bash scripts/check.sh                      # OK: 20 verificacoes passaram.
 # forma 2: mostrar o ciclo já feito, um commit por etapa
 git stash -u                               # guarda o que a IA fez, se houver
 git switch demo/dificuldade-progressiva
-git log --oneline main..
+git log --oneline --no-merges main..
 bash scripts/check.sh                      # OK: 20 verificacoes passaram.
 ```
 
