@@ -5,7 +5,8 @@ argument-hint: <ideia da mudança em uma frase>
 
 Crie a SPEC da seguinte mudança no jogo: $ARGUMENTS
 
-1. Leia `AGENTS.md`, `specs/constitution.md` e `specs/000-jogo-base/spec.md`.
+1. Leia `AGENTS.md`, `specs/constitution.md` e `specs/000-jogo-base/spec.md`. Se existir `specs/cartao.md`
+   (o cartão de visão da equipe), leia também e respeite o que ele põe fora do escopo.
 2. Descubra o próximo número: liste as pastas `specs/[0-9]*` e use o maior número mais 1, com três dígitos.
    Crie `specs/NNN-nome-curto/spec.md` a partir de `specs/templates/spec-template.md`.
 3. Escreva só o QUÊ e o POR QUÊ, do ponto de vista de quem joga. Nada de arquivos, funções ou código.

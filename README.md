@@ -1,12 +1,31 @@
 # Minicurso: jogos com IA e SDD
 
+> **Branch `oficina-teresina`: exemplo avançado.** O mesmo jogo base depois de quatro ciclos de SDD seguidos (tema
+> B-R-O Bró, fases Raul Lopes e UFPI, contato com o cenário e profundidade; specs 001 a 004 em `specs/`).
+> **A aula começa na `main`**; esta branch é para o fechamento e para os próximos passos.
+
 Projeto base do minicurso. É o jogo oficial **Dodge the Creeps** do Godot (arte, música e código prontos), com três acréscimos para trabalhar com IA:
 
 - `config.gd`: textos, cores e números do jogo em um só arquivo, para ver resultado em segundos.
 - `tests/` e `scripts/check.sh`: verificação automática, para a IA (e você) saberem se algo quebrou.
 - `specs/` e `.claude/commands/`: o fluxo **SDD** (desenvolvimento guiado por especificação) pronto para usar.
 
-> Testado com Godot 4.7.2 em Linux, sem janela. Os testes cobrem as regras da partida, mas não o visual: jogue uma partida (F5) antes de apresentar.
+> Testado com Godot 4.7.2 em Linux e Windows, sem janela. Os testes cobrem as regras da partida, mas não o visual: jogue uma partida (F5) antes de apresentar.
+
+## Roteiro da aula e branches
+
+A aula de 2 horas (abertura, equipe, planejamento, Godot, SDD, estudo de caso, demonstração, prática e fechamento)
+está em [`docs/roteiro.md`](docs/roteiro.md), bloco a bloco, com o que usar do repositório em cada um.
+
+| Branch | Para quê | `scripts/check.sh` |
+| --- | --- | --- |
+| `main` | Ponto de partida de todo mundo | 17 verificações |
+| `demo/dificuldade-progressiva` | O resultado da demonstração ao vivo, com um commit por etapa do SDD | 20 verificações |
+| `oficina-teresina` | Exemplo avançado: quatro specs seguidas, um jogo com a cara de Teresina (esta) | 82 verificações |
+| `equipe/<nome>` | A mudança de cada equipe na prática: `git switch -c equipe/<nome>` a partir da `main` | — |
+
+Material de apoio: cartão de visão (`specs/templates/cartao-de-visao.md`), retrospectiva
+(`specs/templates/retrospectiva.md`) e ficha de referências (`docs/referencias.md`).
 
 ## Pré-requisitos
 
@@ -18,7 +37,7 @@ Projeto base do minicurso. É o jogo oficial **Dodge the Creeps** do Godot (arte
 
 ## Primeiros passos
 
-1. **Baixar o projeto.** `git clone <endereço-do-repositório>` e depois `cd minicurso-jogos-ia`. Traz código, arte, specs e comandos de uma vez.
+1. **Baixar o projeto.** `git clone https://github.com/alexand7e/minicurso-jogos-ia.git` e depois `cd minicurso-jogos-ia`. Traz código, arte, specs e comandos de uma vez.
 2. **Abrir no Godot.** No gerenciador de projetos: *Importar*, escolha o arquivo `project.godot`. A primeira abertura importa arte e som (cerca de um minuto, só desta vez).
 3. **Jogar.** Aperte **F5**. Setas ou WASD movem o personagem; Espaço ou Enter começam a partida. Se jogou uma partida inteira, o ambiente está certo.
 4. **Mudar sem código.** Abra `config.gd`, troque `PLAYER_SPEED`, `BACKGROUND_COLOR` ou `TITLE`, salve e aperte F5 de novo. Cada valor tem um comentário explicando a unidade.
@@ -59,12 +78,22 @@ Os princípios do projeto estão em `specs/constitution.md`; modelos em `specs/t
 
 `specs/exemplos/dificuldade-progressiva/` traz um ciclo inteiro já pronto (spec, plano e tarefas): inimigos que ficam mais rápidos conforme a pontuação. Use para ver como uma spec boa se parece.
 
-Se a IA travar ou o tempo apertar, aplique a solução verificada na raiz do projeto e rode o check (deve dar 20 verificações):
+Se a IA travar ou o tempo apertar, aplique a solução verificada na raiz do projeto e rode o check (deve dar 20 verificações).
+O patch vale para a `main`; nesta branch o código já mudou e ele não aplica:
 
 ```bash
 git apply specs/exemplos/dificuldade-progressiva/solucao.patch
 ./scripts/check.sh
 ```
+
+Ou mostre o ciclo já feito, com um commit por etapa (spec, plano, tarefas e cada tarefa implementada):
+
+```bash
+git switch demo/dificuldade-progressiva
+git log --oneline main..
+```
+
+Outro exemplo, só de spec: `specs/exemplos/voo-com-obstaculos/spec.md`, o estudo de caso do jogo de voo de um botão.
 
 ## Ideias de mudança para a prática
 
@@ -76,6 +105,7 @@ git apply specs/exemplos/dificuldade-progressiva/solucao.patch
 | Três vidas antes do fim de jogo | Média | `main.gd`, `player.gd`, `hud.gd` |
 | Novo tipo de inimigo (maior ou mais rápido) | Média | `main.gd`, `mob.gd` |
 | Trocar arte e música por pacotes CC0 | Fácil, mas exige baixar arquivos | `art/`, `README.md` (créditos) |
+| Desafio: só a spec do jogo de voo (sem código) | Fácil | `specs/` (veja `specs/exemplos/voo-com-obstaculos/`) |
 
 ## Estrutura
 
@@ -90,7 +120,8 @@ tall.gd              prédios, copas e mastro em perspectiva (profundidade)
 art/ fonts/          arte, música e fonte do demo
 tests/run_tests.gd   testes de aceitação (um grupo por CA-xx)
 scripts/check.sh     importa e roda os testes sem janela
-specs/               constituição, modelos, spec base e exemplos
+specs/               constituição, modelos (spec, plano, tarefas, cartão, retrospectiva), spec base e exemplos
+docs/                roteiro da aula e ficha de referências
 AGENTS.md            regras para a IA (CLAUDE.md aponta para ele)
 .claude/commands/    os quatro comandos do SDD
 ```
