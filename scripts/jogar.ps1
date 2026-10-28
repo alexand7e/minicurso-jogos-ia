@@ -100,9 +100,9 @@ if ($atual -ne $branch) {
     }
 }
 
-# --- 3. Godot aberto mostraria a versão anterior: fechar antes de trocar ---
+# --- 3. Godot aberto mostraria a versão anterior: fechar antes de trocar (na mesma versão, não precisa) ---
 $abertos = Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -like "Godot*" }
-if ($abertos) {
+if ($abertos -and $atual -ne $branch) {
     $fechar = $FecharGodot
     if (-not $fechar) {
         Write-Host "O Godot está aberto. Salve o que estiver fazendo nele." -ForegroundColor Yellow
