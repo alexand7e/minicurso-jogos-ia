@@ -3,6 +3,8 @@
 Acompanha a apresentação "Minicurso: Jogos com IA e SDD". Cada bloco diz o que se faz e o que se usa do repositório.
 O objetivo é cada equipe sair com **uma mudança jogável**: decidir, escrever, verificar.
 
+Os comandos que o instrutor roda antes, durante e depois da aula estão em [`comandos-do-instrutor.md`](comandos-do-instrutor.md).
+
 | # | Bloco | Tempo | No repositório |
 | --- | --- | --- | --- |
 | 1 | Abertura: o destino | 8 min | — |
@@ -24,7 +26,7 @@ O objetivo é cada equipe sair com **uma mudança jogável**: decidir, escrever,
 | `oficina-teresina` | Exemplo avançado: o mesmo método, quatro specs seguidas, um jogo com a cara de Teresina | 82 verificações |
 | `equipe/<nome>` | A mudança de cada equipe na prática (cada equipe cria a sua) | — |
 
-Para ver o ciclo da demonstração passo a passo: `git log --oneline main..demo/dificuldade-progressiva`.
+Para ver o ciclo da demonstração passo a passo: `git log --oneline --no-merges main..demo/dificuldade-progressiva`.
 
 ---
 
@@ -120,7 +122,7 @@ git apply specs/exemplos/dificuldade-progressiva/solucao.patch
 
 # ou mostrar o ciclo já feito, um commit por etapa
 git switch demo/dificuldade-progressiva
-git log --oneline main..
+git log --oneline --no-merges main..
 ```
 
 ## 8. Prática (25 min, em equipes)
